@@ -38,6 +38,7 @@ class LoginView: UIView {
         let signInWithAppleButton = setupAppleButton()
         let signInWithFacebookButton = setupFacebookButton()
         let signInWithGoogleButton = setupGoogleButton()
+        let orLabel = setupOrLabel()
         let loginSigninButton = setupLoginSignInButton()
         let emailTextField = setupEmailTextField()
         let passwordTextField = setupPasswordTextField()
@@ -46,12 +47,13 @@ class LoginView: UIView {
         self.addSubview(signInWithAppleButton)
         self.addSubview(signInWithFacebookButton)
         self.addSubview(signInWithGoogleButton)
+        self.addSubview(orLabel)
         self.addSubview(emailTextField)
         self.addSubview(passwordTextField)
         self.addSubview(loginSigninButton)
         self.addSubview(forgotPasswordButton)
         self.addSubview(skipButton)
-        self.setupConstraints(siwab: signInWithAppleButton, siwfb: signInWithFacebookButton, siwgb: signInWithGoogleButton, etf: emailTextField, pwtf: passwordTextField, lisib: loginSigninButton, fpwb: forgotPasswordButton, skip: skipButton)
+        self.setupConstraints(siwab: signInWithAppleButton, siwfb: signInWithFacebookButton, siwgb: signInWithGoogleButton, or: orLabel, etf: emailTextField, pwtf: passwordTextField, lisib: loginSigninButton, fpwb: forgotPasswordButton, skip: skipButton)
         self.backgroundColor = .white
     }
     
@@ -61,8 +63,8 @@ extension LoginView {
     func setupAppleButton() ->  ASAuthorizationAppleIDButton {
         let button =  ASAuthorizationAppleIDButton()
         button.addTarget(delegate, action: #selector(delegate?.handleSignInWithAppleButtonClicked), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }
     
@@ -72,8 +74,8 @@ extension LoginView {
         button.setTitle("Sign in with Facebook", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .blue
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }
     
@@ -83,8 +85,8 @@ extension LoginView {
         button.setTitle("Sign in with Google", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.backgroundColor = .green
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }
     
@@ -124,8 +126,8 @@ extension LoginView {
         button.setTitle("Log in / Sign up", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.backgroundColor = .lightGray
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.layer.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }
     
@@ -151,7 +153,15 @@ extension LoginView {
         return button
     }
     
-    func setupConstraints(siwab: ASAuthorizationAppleIDButton, siwfb: UIButton, siwgb: UIButton, etf: UITextField, pwtf: UITextField, lisib: UIButton, fpwb: UIButton, skip: UIButton) {
+    func setupOrLabel() -> UILabel {
+        let label = UILabel()
+        label.text = "OR"
+        label.textColor = UIColor.black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }
+    
+    func setupConstraints(siwab: ASAuthorizationAppleIDButton, siwfb: UIButton, siwgb: UIButton, or: UILabel, etf: UITextField, pwtf: UITextField, lisib: UIButton, fpwb: UIButton, skip: UIButton) {
         NSLayoutConstraint.activate([
             //Apple button
             siwab.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: -150),
@@ -163,37 +173,37 @@ extension LoginView {
             siwfb.topAnchor.constraint(equalTo: siwab.bottomAnchor, constant: 8),
             siwfb.widthAnchor.constraint(equalToConstant: 200),
             //Google button
-            siwgb.heightAnchor.constraint(equalToConstant: 40),
             siwgb.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             siwgb.topAnchor.constraint(equalTo: siwfb.bottomAnchor, constant: 8),
             siwgb.widthAnchor.constraint(equalToConstant: 200),
             siwgb.heightAnchor.constraint(equalToConstant: 40),
+            //OR label
+            or.heightAnchor.constraint(equalToConstant: 40),
+            or.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            or.topAnchor.constraint(equalTo: siwgb.bottomAnchor, constant: 8),
             //Email text field
-            etf.heightAnchor.constraint(equalToConstant: 40),
             etf.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            etf.topAnchor.constraint(equalTo: siwgb.bottomAnchor, constant: 20),
+            etf.topAnchor.constraint(equalTo: or.bottomAnchor, constant: 8),
             etf.widthAnchor.constraint(equalToConstant: 200),
             etf.heightAnchor.constraint(equalToConstant: 40),
             //Password text field
-            pwtf.heightAnchor.constraint(equalToConstant: 40),
             pwtf.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             pwtf.topAnchor.constraint(equalTo: etf.bottomAnchor, constant: 8),
             pwtf.widthAnchor.constraint(equalToConstant: 200),
             pwtf.heightAnchor.constraint(equalToConstant: 40),
             //Login Signin button
-            lisib.heightAnchor.constraint(equalToConstant: 40),
             lisib.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             lisib.topAnchor.constraint(equalTo: pwtf.bottomAnchor, constant: 20),
             lisib.widthAnchor.constraint(equalToConstant: 140),
             lisib.heightAnchor.constraint(equalToConstant: 40),
             //Forgot password button
-            fpwb.heightAnchor.constraint(equalToConstant: 20),
             fpwb.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             fpwb.topAnchor.constraint(equalTo: lisib.bottomAnchor, constant: 30),
+            fpwb.heightAnchor.constraint(equalToConstant: 20),
             //Skip button
-            skip.heightAnchor.constraint(equalToConstant: 20),
             skip.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             skip.topAnchor.constraint(equalTo: fpwb.bottomAnchor, constant: 15),
+            skip.heightAnchor.constraint(equalToConstant: 20),
         ])
     }
 }
