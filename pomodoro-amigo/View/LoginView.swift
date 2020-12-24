@@ -35,6 +35,8 @@ class LoginView: UIView {
     }
     
     func didLoad() {
+        self.backgroundColor = .white
+        
         let signInWithAppleButton = setupAppleButton()
         let signInWithFacebookButton = setupFacebookButton()
         let signInWithGoogleButton = setupGoogleButton()
@@ -54,7 +56,6 @@ class LoginView: UIView {
         self.addSubview(forgotPasswordButton)
         self.addSubview(skipButton)
         self.setupConstraints(siwab: signInWithAppleButton, siwfb: signInWithFacebookButton, siwgb: signInWithGoogleButton, or: orLabel, etf: emailTextField, pwtf: passwordTextField, lisib: loginSigninButton, fpwb: forgotPasswordButton, skip: skipButton)
-        self.backgroundColor = .white
     }
     
 }
