@@ -25,9 +25,20 @@ extension TimerViewController: TimerViewControllerDelegate {
     func handlePauseTimerPressed() {
         print("handlePauseTimerPressed")
     }
+    //TODO: Make this react to a central state and change the toggle based on that
+    //instead of comparing a UIImage instance.
     @objc
-    func handleRepeatToggled() {
+    func handleRepeatToggled(_ sender: UIButton) {
         print("handleRepeatToggled")
+        let config = UIImage.SymbolConfiguration(pointSize: 38, weight: UIImage.SymbolWeight.bold, scale: .large)
+        if sender.currentImage == UIImage(systemName: "square", withConfiguration: config) {
+            let checkmarkSquare = UIImage(systemName: "checkmark.square", withConfiguration: config)
+            sender.setImage(checkmarkSquare, for: .normal)
+        }
+        else {
+            let square = UIImage(systemName: "square", withConfiguration: config)
+            sender.setImage(square, for: .normal)
+        }
     }
     @objc
     func handleSaveToCollectionPressed() {

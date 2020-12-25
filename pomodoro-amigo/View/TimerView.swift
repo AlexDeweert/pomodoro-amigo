@@ -13,7 +13,7 @@ protocol TimerViewControllerDelegate {
     //Default mode buttons
     func handleStartTimerPressed()
     func handlePauseTimerPressed()
-    func handleRepeatToggled()
+    func handleRepeatToggled(_ sender: UIButton)
     func handleSaveToCollectionPressed()
     func handleEditPressed()
     
@@ -29,6 +29,8 @@ protocol TimerViewControllerDelegate {
 }
 
 class TimerView: UIView {
+    
+    var delegate: TimerViewControllerDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -49,6 +51,7 @@ class TimerView: UIView {
         let startTimer = setupStartTimer()
         let pauseTimer = setupPauseTimer()
         let repeatToggle = setupRepeatToggle()
+        let repeatLabel = setupRepeatLabel()
         let saveToCollectionButton = setupSaveToCollectionButton()
         let editButton = setupEditButton()
         //Edit mode setup
@@ -60,12 +63,13 @@ class TimerView: UIView {
         self.addSubview(startTimer)
         self.addSubview(pauseTimer)
         self.addSubview(repeatToggle)
+        self.addSubview(repeatLabel)
         self.addSubview(saveToCollectionButton)
         self.addSubview(editButton)
 //        self.addSubview(editModeTimerTitle)
 //        self.addSubview(saveEditsButton)
         
-        setupConstraints(dmtt: defaultModeTimerTitle, dmic: defaultModeIntervalCollection, stb: startTimer, ptb: pauseTimer, rtb: repeatToggle, stcb: saveToCollectionButton, eb: editButton)
+        setupConstraints(dmtt: defaultModeTimerTitle, dmic: defaultModeIntervalCollection, stb: startTimer, ptb: pauseTimer, rtb: repeatToggle, rl: repeatLabel, stcb: saveToCollectionButton, eb: editButton)
     }
 }
 
@@ -74,6 +78,7 @@ extension TimerView {
         let label = UILabel()
         label.text = "Interval Schema Name"
         label.textColor = UIColor.black
+        label.font = UIFont.systemFont(ofSize: 32)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }
@@ -87,41 +92,68 @@ extension TimerView {
     
     func setupStartTimer() -> UIButton {
         let button = UIButton()
-        button.setTitle("Start", for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 45, weight: UIImage.SymbolWeight.bold, scale: .large)
+        let playIcon = UIImage(systemName: "play.fill", withConfiguration: config)
+        button.setImage(playIcon, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(delegate, action: #selector(delegate?.handleStartTimerPressed), for: .touchUpInside)
         return button
     }
     
     func setupPauseTimer() -> UIButton {
         let button = UIButton()
-        button.setTitle("Pause", for: .normal)
-        button.setTitleColor(UIColor.black, for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 45, weight: UIImage.SymbolWeight.bold, scale: .large)
+        let pauseIcon = UIImage(systemName: "pause.fill", withConfiguration: config)
+        button.setImage(pauseIcon, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(delegate, action: #selector(delegate?.handlePauseTimerPressed), for: .touchUpInside)
         return button
     }
     
+    //TODO:
+    //The style of this button needs to change based on app state (user preferences state)
+    //Alternate between checked and unchecked images based on UIControlStateNormal and Selected
     func setupRepeatToggle() -> UIButton {
-        //Alternate between checked and unchecked images based on UIControlStateNormal and Selected
         let button = UIButton()
-        button.setTitle("Repeat?", for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 38, weight: UIImage.SymbolWeight.bold, scale: .large)
+        let checkmarkSquare = UIImage(systemName: "checkmark.square", withConfiguration: config)
+        button.setImage(checkmarkSquare, for: .normal)
         button.setTitleColor(UIColor.black, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(delegate, action: #selector(delegate?.handleRepeatToggled(_:)), for: .touchUpInside)
         return button
+    }
+    
+    func setupRepeatLabel() -> UILabel {
+        let label = UILabel()
+        label.text = "Repeat"
+        label.font = UIFont.systemFont(ofSize: 20)
+        label.textColor = UIColor.black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }
     
     func setupSaveToCollectionButton() -> UIButton {
         let button = UIButton()
         button.setTitle("Save to collection", for: .normal)
-        button.setTitleColor(UIColor.black, for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.backgroundColor = UIColor.systemBlue
+        button.layer.cornerRadius = 5
+        button.contentEdgeInsets = UIEdgeInsets(top: 3, left: 5, bottom: 3, right: 5)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(delegate, action: #selector(delegate?.handleSaveToCollectionPressed), for: .touchUpInside)
         return button
     }
     
     func setupEditButton() -> UIButton {
         let button = UIButton()
         button.setTitle("Edit", for: .normal)
-        button.setTitleColor(UIColor.black, for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.backgroundColor = UIColor.systemBlue
+        button.layer.cornerRadius = 5
+        button.contentEdgeInsets = UIEdgeInsets(top: 3, left: 5, bottom: 3, right: 5)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(delegate, action: #selector(delegate?.handleEditPressed), for: .touchUpInside)
         return button
     }
     
@@ -135,25 +167,40 @@ extension TimerView {
 //        return button
 //    }
     
-    func setupConstraints(dmtt: UILabel, dmic: UICollectionView, stb: UIButton, ptb: UIButton, rtb: UIButton, stcb: UIButton, eb: UIButton) {
-        
+    func setupConstraints(dmtt: UILabel, dmic: UICollectionView, stb: UIButton, ptb: UIButton, rtb: UIButton, rl: UILabel, stcb: UIButton, eb: UIButton) {
+        print(UIScreen.main.bounds.height)
+        print(UIScreen.main.bounds.height*0.15)
         NSLayoutConstraint.activate([
+            //Default mode timer title
             dmtt.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            dmtt.centerYAnchor.constraint(equalTo: self.centerYAnchor, constant: -150),
+            dmtt.centerYAnchor.constraint(equalTo: self.topAnchor, constant: UIScreen.main.bounds.height*0.15),
+            //Default mode interval collection
             dmic.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            dmic.centerYAnchor.constraint(equalTo: dmtt.bottomAnchor, constant: 60),
-            dmic.widthAnchor.constraint(equalToConstant: 150),
-            dmic.heightAnchor.constraint(equalToConstant: 150),
-            stb.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: -50),
-            stb.centerYAnchor.constraint(equalTo: dmic.bottomAnchor, constant: 100),
-            ptb.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 50),
-            ptb.centerYAnchor.constraint(equalTo: dmic.bottomAnchor, constant: 100),
-            rtb.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            rtb.centerYAnchor.constraint(equalTo: ptb.bottomAnchor, constant: 8),
+            dmic.topAnchor.constraint(equalTo: dmtt.bottomAnchor, constant: 60),
+            dmic.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
+            dmic.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height*0.35),
+            //Start timer button
+            stb.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: -45),
+            stb.topAnchor.constraint(equalTo: dmic.bottomAnchor, constant: 35),
+            //Pause timer button
+            ptb.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 45),
+            ptb.topAnchor.constraint(equalTo: dmic.bottomAnchor, constant: 35),
+            //Repeat toggle (a button that changes state from checked to unchecked)
+            rtb.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: -35),
+            rtb.topAnchor.constraint(equalTo: ptb.bottomAnchor, constant: 35),
+            //Repeat toggle label
+            rl.centerXAnchor.constraint(equalTo: self.centerXAnchor, constant: 25),
+            rl.centerYAnchor.constraint(equalTo: rtb.centerYAnchor),
+            //Save to collection button (to the list of intervals)
             stcb.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            stcb.centerYAnchor.constraint(equalTo: rtb.bottomAnchor, constant: 8),
+            stcb.topAnchor.constraint(equalTo: rtb.bottomAnchor, constant: 26),
+            stcb.widthAnchor.constraint(equalToConstant: 200),
+            stcb.heightAnchor.constraint(equalToConstant: 40),
+            //Edit button
             eb.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            eb.centerYAnchor.constraint(equalTo: stcb.bottomAnchor, constant: 8),
+            eb.topAnchor.constraint(equalTo: stcb.bottomAnchor, constant: 8),
+            eb.widthAnchor.constraint(equalToConstant: 200),
+            eb.heightAnchor.constraint(equalToConstant: 40)
         ])
         
     }
